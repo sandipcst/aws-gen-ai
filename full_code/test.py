@@ -1,28 +1,28 @@
+import boto3
+import json
 
-import streamlit as st
-import sqlparse, re
+llamaModelId = 'meta.llama2-13b-chat-v1' 
+prompt = "Just make the following SQL compatible with PostGreSQL? Just provide the output query only without any explaination. \n create table t1 (a int); "
 
-import sqlvalidator
+llamaPayload = json.dumps({ 
+	'prompt': prompt,
+    'max_gen_len': 512,
+	'top_p': 0.9,
+	'temperature': 0.2
+})
 
-# sql_query = sqlvalidator.parse("SELECT * from table")
-
-promptinput = st.text_input("Enter your SQL to convert")
-
-output = []
-
-sql = sqlvalidator.parse(promptinput)
-
-if sql.is_valid():
-    output.append(promptinput)
-else:
-    ddls = sqlparse.split(promptinput)
-    import re
-
-    #tables_regex = re.compile("CREATE TABLE.*\(", re.IGNORECASE)
-
-    tables_regex = re.compile(r"^(CREATE|ALTER|DROP|GRANT|REVOKE)\s+(TABLE|VIEW|PROCEDURE|)", re.IGNORECASE)
-    for ddl in ddls:
-        if tables_regex.match(ddl):
-            output.append(ddl)
-    
-    st.write(text for text in output)
+bedrock_runtime = boto3.client(
+    service_name="bedrock-runtime",
+    region_name="us-east-1",
+    aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",
+    aws_secret_access_key="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"
+    )
+response = bedrock_runtime.invoke_model(
+    body=llamaPayload, 
+    modelId=llamaModelId, 
+    accept='application/json', 
+    contentType='application/json'
+)
+body = response.get('body').read().decode('utf-8')
+response_body = json.loads(body)
+print(response_body['generation'].strip())

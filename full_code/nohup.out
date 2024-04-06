@@ -1,0 +1,115 @@
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Network URL: http://10.182.0.2:8501
+  External URL: http://34.125.213.149:8501
+
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+2024-04-06 17:08:58.536 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 142, in <module>
+    main()
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 119, in main
+    output.push(get_text_output(response_body))
+AttributeError: 'list' object has no attribute 'push'
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Network URL: http://10.182.0.2:8502
+  External URL: http://34.125.213.149:8502
+
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama-2-13b
+ERROR:__main__:A client error occurred: Could not resolve the foundation model from the provided model identifier.
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+ERROR:__main__:A client error occurred: Malformed input request: #: required key [prompt] not found#: extraneous key [inputText] is not permitted#: extraneous key [textGenerationConfig] is not permitted, please reformat your input and try again.
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+ERROR:__main__:A client error occurred: Malformed input request: #: required key [prompt] not found#: extraneous key [inputText] is not permitted, please reformat your input and try again.
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+ERROR:__main__:A client error occurred: Malformed input request: #: required key [prompt] not found#: extraneous key [inputText] is not permitted, please reformat your input and try again.
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+ERROR:__main__:A client error occurred: Malformed input request: #: required key [prompt] not found#: extraneous key [inputText] is not permitted, please reformat your input and try again.
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+2024-04-06 18:52:19.387 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 143, in <module>
+    main()
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 120, in main
+    output.append(get_text_output(response_body))
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 68, in get_text_output
+    for result in response_body['results']:
+KeyError: 'results'
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+2024-04-06 18:54:46.266 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 143, in <module>
+    main()
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 120, in main
+    output.append(get_text_output(response_body))
+  File "/root/gen-ai-workshop/full_code/gen_SQLConversion.py", line 67, in get_text_output
+    output = json.loads(response_body)
+  File "/usr/lib/python3.8/json/__init__.py", line 341, in loads
+    raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+TypeError: the JSON object must be str, bytes or bytearray, not dict
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1

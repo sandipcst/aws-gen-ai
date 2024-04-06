@@ -4,8 +4,8 @@ import json
 import logging
 import boto3
 import streamlit as st
-from streamlit import button
-import sqlvalidator
+#from streamlit import button
+import sqlvalidator, sqlparse, re
 
 
 from botocore.exceptions import ClientError
@@ -42,7 +42,7 @@ def generate_text(model_id, body):
     region_name="us-east-1",
     aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",
     aws_secret_access_key="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"
-)
+    )
 
     accept = "application/json"
     content_type = "application/json"
@@ -50,7 +50,7 @@ def generate_text(model_id, body):
     response = bedrock.invoke_model(
         body=body, modelId=model_id, accept=accept, contentType=content_type
     )
-    response_body = json.loads(response.get("body").read())
+    response_body = json.loads(response.get("body").read().decode('utf-8'))
 
     finish_reason = response_body.get("error")
 
@@ -63,10 +63,13 @@ def generate_text(model_id, body):
     return response_body
 
 
-def get_text_output(response_body):
-    output = ''
-    for result in response_body['results']:
-        output += result['outputText']
+def get_text_output(selectmodel,response_body):
+    if selectmodel == 'Llama 2':
+        output = response_body['generation'].strip()
+    if selectmodel == 'Amazon Text Gen':
+        output = ''
+        for result in response_body['results']:
+            output += result['outputText']
         
     
     return output
@@ -80,46 +83,69 @@ def main():
         logging.basicConfig(level=logging.INFO,
                             format="%(levelname)s: %(message)s")
 
-        model_id = 'amazon.titan-text-express-v1'
+        #model_id = 'amazon.titan-text-express-v1'
+        #model_id = 'meta.llama2-13b-chat-v1'
+
 
         
         promptinput = st.text_input("Enter your SQL to convert")
         
         valid_sql = True
 
-        sql = sqlvalidator.parse(promptinput)
+        #sql = sqlvalidator.parse(promptinput)
 
-        if sql.is_valid():
-            valid_sql = True
-        else:
+        try:
+            sqls = sqlparse.split(promptinput)
+        except:
             valid_sql = False
 
         targetDb = st.selectbox('Select target database:', ['Postgres SQL', 'MongoDB NoSQL statement', 'Oracle'])
 
-        
-        prompt = "Just make the following SQL compatible with" +targetDb+"? Just provide the output query only without any explaination."
+        selectmodel = st.selectbox('Select Model:', ['Amazon Text Gen', 'Llama 2'])
 
-        body = json.dumps({
-            "inputText": prompt+" "+promptinput,
-            "textGenerationConfig": {
-                "maxTokenCount": 4096,
-                "stopSequences": [],
-                "temperature": 0,
-                "topP": 1
-            }
-        })
+        if selectmodel == 'Amazon Text Gen':
+            model_id = 'amazon.titan-text-express-v1'
+        else:
+            model_id = 'meta.llama2-13b-chat-v1'
+
+        prompt = "Just make the following SQL compatible with" +targetDb+"? Just provide the output query only without any explaination. \n"
+
+        output = []
 
         if st.button('Start Converting'):
-            if valid_sql:
-                # input is valid SQL, process query
-            
-                response_body = generate_text(model_id, body)
-                output = get_text_output(response_body)
-            else:
-                # input is invalid
-                output = "Invalid SQL entered. Please check your query and try again."
-            st.write(output)
 
+            for sql in sqls:
+                
+                if selectmodel == 'Llama 2':
+                    body = json.dumps({
+                        "prompt": prompt+" "+sql,
+                        'max_gen_len': 512,
+                        'top_p': 0.9,
+                        'temperature': 0.2
+
+                    })
+                
+                if selectmodel == 'Amazon Text Gen':
+                    body = json.dumps({
+                        "inputText": prompt+" "+sql,
+                        "textGenerationConfig": {
+                            "maxTokenCount": 4096,
+                            "stopSequences": [],
+                            "temperature": 0,
+                            "topP": 1
+                        }
+                    })
+
+                if valid_sql:
+                    # input is valid SQL, process query
+                    response_body = generate_text(model_id, body)
+                    output.append(get_text_output(selectmodel,response_body))
+                else:
+                    # input is invalid
+                    output.append("Invalid SQL entered. Please check your query and try again.")
+                #st.write(output)
+        
+        st.write(text for text in output)
 
     except ClientError as err:
         message = err.response["Error"]["Message"]
