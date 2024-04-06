@@ -6,7 +6,7 @@ import json
 st.title("Building with Bedrock")  # Title of the application
 st.subheader("Image Generation Demo")
 
-REGION = "us-west-2"
+REGION = "us-east-1"
 
 # List of Stable Diffusion Preset Styles
 sd_presets = [
@@ -34,6 +34,8 @@ sd_presets = [
 bedrock_runtime = boto3.client(
     service_name="bedrock-runtime",
     region_name=REGION,
+    aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",
+    aws_secret_access_key="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"
 )
 
 
@@ -110,5 +112,37 @@ def generate_image_titan(text):
     results = response_body.get("images")[0]
     return results
 
+import streamlit as st
+import boto3, io
+import json
+from PIL import Image
+import base64
 
-model = st.selectbox("Select model", ["Stable Diffusion", "Amazon Titan"])
+# Existing code
+
+# 1. Add text input
+prompt = st.text_input("Enter Prompt")
+
+# 2. Add style select if Stable Diffusion 
+model = st.selectbox("Select Model", ["Stable Diffusion", "Amazon Titan"])
+if model == "Stable Diffusion":
+  style = st.selectbox("Select Style", sd_presets)
+
+# 3. Function to convert base64 to image
+def base64_to_image(base64_str):
+  imgdata = base64.b64decode(base64_str)
+  return Image.open(io.BytesIO(imgdata))
+
+# 4. Generate button  
+if st.button("Generate"):
+
+  # Call appropriate generation function
+  if model == "Amazon Titan":
+    image_b64 = generate_image_titan(prompt)
+  else:  
+    image_b64 = generate_image_sd(prompt, style)  
+
+  # 5. Convert base64 to PIL image  
+  image = base64_to_image(image_b64)
+
+  st.image(image)

@@ -5,7 +5,9 @@ import time
 # Setup bedrock
 bedrock_runtime = boto3.client(
     service_name="bedrock-runtime",
-    region_name="us-west-2",
+    region_name=REGION,
+    aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",
+    aws_secret_access_key="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"
 )
 
 

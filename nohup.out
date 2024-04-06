@@ -1,0 +1,56 @@
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Network URL: http://10.182.0.2:8502
+  External URL: http://34.125.213.149:8502
+
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Network URL: http://10.182.0.2:8503
+  External URL: http://34.125.213.149:8503
+
+2024-04-06 05:24:01.667 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/test.py", line 19, in <module>
+    if sql.is_valid():
+NameError: name 'sql' is not defined
+2024-04-06 05:24:07.370 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/test.py", line 19, in <module>
+    if sql.is_valid():
+NameError: name 'sql' is not defined
+2024-04-06 05:24:50.102 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/test.py", line 13, in <module>
+    sql = sqlvalidator.parse(promptinput)[0]
+TypeError: 'SQLQuery' object is not subscriptable
+2024-04-06 06:55:33.921 Uncaught app exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/test.py", line 18, in <module>
+    ddls = sqlparse.split(sql)
+  File "/usr/local/lib/python3.8/dist-packages/sqlparse/__init__.py", line 70, in split
+    return [str(stmt).strip() for stmt in stack.run(sql, encoding)]
+  File "/usr/local/lib/python3.8/dist-packages/sqlparse/__init__.py", line 70, in <listcomp>
+    return [str(stmt).strip() for stmt in stack.run(sql, encoding)]
+  File "/usr/local/lib/python3.8/dist-packages/sqlparse/engine/filter_stack.py", line 34, in run
+    for stmt in stream:
+  File "/usr/local/lib/python3.8/dist-packages/sqlparse/engine/statement_splitter.py", line 84, in process
+    for ttype, value in stream:
+  File "/usr/local/lib/python3.8/dist-packages/sqlparse/lexer.py", line 128, in get_tokens
+    raise TypeError("Expected text or file-like object, got {!r}".
+TypeError: Expected text or file-like object, got <class 'sqlvalidator.sql_validator.SQLQuery'>
