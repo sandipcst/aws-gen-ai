@@ -54,3 +54,6 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.8/dist-packages/sqlparse/lexer.py", line 128, in get_tokens
     raise TypeError("Expected text or file-like object, got {!r}".
 TypeError: Expected text or file-like object, got <class 'sqlvalidator.sql_validator.SQLQuery'>
+Usage: streamlit run [OPTIONS] TARGET [ARGS]...
+
+Error: Invalid value: File does not exist: gen_SQLConversion.py

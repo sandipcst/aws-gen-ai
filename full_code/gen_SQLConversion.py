@@ -105,7 +105,7 @@ def main():
 
         if selectmodel == 'Amazon Text Gen':
             model_id = 'amazon.titan-text-express-v1'
-        else:
+        if selectmodel == 'Llama 2':
             model_id = 'meta.llama2-13b-chat-v1'
 
         prompt = "Just make the following SQL compatible with" +targetDb+"? Just provide the output query only without any explaination. \n"
@@ -121,7 +121,7 @@ def main():
                         "prompt": prompt+" "+sql,
                         'max_gen_len': 512,
                         'top_p': 0.9,
-                        'temperature': 0.2
+                        'temperature': 0.5
 
                     })
                 
