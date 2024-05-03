@@ -1,8 +1,9 @@
 
 Step 1 - 
-Create 2 S3 buckets. 
+Create 3 S3 buckets. 
   a. Source SQL BUcket name - example-381491837089
   b. Target Bucket name - output-381491837089
+  c. Prompt Bucket name - prompt-buc-381491837089
 
 Step 2 - 
 Create a Role "Lambda-Role-for-S3-SQS" trusting Lambda with following policy-
@@ -93,6 +94,23 @@ Update Target Bucket name - output-381491837089 S3 bucket policy -
             },
             "Action": "s3:PutObject",
             "Resource": "arn:aws:s3:::output-381491837089/*"
+        }
+    ]
+}
+
+Update Prompt Bucket Policy - 
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::381491837089:role/Lambda-Role-for-S3-SQS"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::prompt-buc-381491837089/*"
         }
     ]
 }
