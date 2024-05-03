@@ -1,0 +1,66 @@
+
+Step 1 - 
+Create S3 bucket. BUcket name - example-381491837089
+
+Step 2 - 
+Create a Role "Lambda-Role-for-S3-SQS" trusting Lambda with following policy-
+    1. AmazonS3ReadOnlyAccess
+    2. AWSLambdaSQSQueueExecutionRole
+
+Step 3  - Create SQS named myqueue and modify SQS policy like below -
+// This will grant S3 to publish event in SQS
+
+
+{
+  "Version": "2012-10-17",
+  "Id": "example-ID",
+  "Statement": [
+    {
+      "Sid": "example-statement-ID",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "SQS:SendMessage",
+      "Resource": "arn:aws:sqs:us-east-1:381491837089:myqueue",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "381491837089"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:s3:::example-381491837089"
+        }
+      }
+    },
+    {
+      "Sid": "LambdaAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::381491837089:role/Lambda-Role-for-S3-SQS"
+      },
+      "Action": "SQS:*",
+      "Resource": "arn:aws:sqs:us-east-1:381491837089:myqueue"
+    }
+  ]
+}
+
+Step 4 - 
+S3 => Properties => Event Notification => Give SQS details and create event for all put objects in s3
+
+Step 5 - 
+Update S3 bucket policy -
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::381491837089:role/Lambda-Role-for-S3-SQS"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::example-381491837089/*"
+        }
+    ]
+}

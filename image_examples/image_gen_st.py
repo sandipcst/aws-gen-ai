@@ -33,9 +33,12 @@ sd_presets = [
 # Define bedrock
 bedrock_runtime = boto3.client(
     service_name="bedrock-runtime",
-    region_name=REGION,
-    aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",
-    aws_secret_access_key="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"
+    #region_name=REGION,                                                # My AWS Credential
+    #aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",                          # My AWS Credential
+    #aws_secret_access_key="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"   # My AWS Credential
+    region_name="us-east-1",                                            # ACloudGuru Credential
+    aws_access_key_id="AKIATIHF5666J3EIFVB6",                           # ACloudGuru Credential
+    aws_secret_access_key="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"    # ACloudGuru Credential
 )
 
 

@@ -12,7 +12,12 @@ REGION = "us-west-2"
 # Define bedrock
 bedrock_runtime = boto3.client(
     service_name="bedrock-runtime",
-    region_name=REGION,
+    #region_name=REGION,                                                # My AWS Credential
+    #aws_access_key_id="AKIAVRUVPPCQXOMUFMNP",                          # My AWS Credential
+    #aws_secret_access_key="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"   # My AWS Credential
+    region_name="us-east-1",                                            # ACloudGuru Credential
+    aws_access_key_id="AKIA6EMZFATNI6FY63NV",                           # ACloudGuru Credential
+    aws_secret_access_key="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"    # ACloudGuru Credential
 )
 
 

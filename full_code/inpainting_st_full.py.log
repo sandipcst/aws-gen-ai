@@ -1,0 +1,61 @@
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Network URL: http://10.182.0.2:8506
+  External URL: http://34.16.169.145:8506
+
+2024-04-14 13:37:57.104 Uncaught app exception
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/inpainting_st_full.py", line 204, in <module>
+    mask = Image.open("sd_mask.png")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/anaconda3/lib/python3.11/site-packages/PIL/Image.py", line 3227, in open
+    fp = builtins.open(filename, "rb")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'sd_mask.png'
+2024-04-14 13:38:43.912 Uncaught app exception
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/inpainting_st_full.py", line 204, in <module>
+    mask = Image.open("sd_mask.png")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/anaconda3/lib/python3.11/site-packages/PIL/Image.py", line 3227, in open
+    fp = builtins.open(filename, "rb")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'sd_mask.png'
+2024-04-14 13:40:57.659 Uncaught app exception
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/inpainting_st_full.py", line 211, in <module>
+    new_image = inpaint_image_pipeline(user_image, change_prompt, mask, model)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/gen-ai-workshop/full_code/inpainting_st_full.py", line 172, in inpaint_image_pipeline
+    updated_image = titan_inpaint_image(change_prompt, init_image_b64, mask)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/gen-ai-workshop/full_code/inpainting_st_full.py", line 155, in titan_inpaint_image
+    response = bedrock_runtime.invoke_model(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/anaconda3/lib/python3.11/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/anaconda3/lib/python3.11/site-packages/botocore/client.py", line 1021, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ValidationException: An error occurred (ValidationException) when calling the InvokeModel operation: 400 Bad Request: The maximum length of the input image is too long. Max image length: 1408, request input image max length: 2048 
+2024-04-14 13:41:10.995 Uncaught app exception
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 584, in _run_script
+    exec(code, module.__dict__)
+  File "/root/gen-ai-workshop/full_code/inpainting_st_full.py", line 204, in <module>
+    mask = Image.open("sd_mask.png")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/anaconda3/lib/python3.11/site-packages/PIL/Image.py", line 3227, in open
+    fp = builtins.open(filename, "rb")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'sd_mask.png'

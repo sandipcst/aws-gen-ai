@@ -146,3 +146,72 @@ INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2
 INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
 INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
 INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+  Stopping...
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model amazon.titan-text-express-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+Finished generating text with the Amazon &titan-text-express; model meta.llama2-13b-chat-v1.
+  Stopping...
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Network URL: http://10.182.0.2:8501
+  External URL: http://34.125.179.67:8501
+
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model meta.llama2-13b-chat-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Generating text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+INFO:__main__:Successfully generated text with Amazon &titan-text-express; model amazon.titan-text-express-v1
+running gen_SQLConversion.py
+running gen_amazon_text.py
+running gen_text.py
+running image_gen_st_full.py
+running image_to_image_st_full.py
+running image_understanding_st_full.py
+running inpainting_st_full.py
+running test.py
