@@ -8,7 +8,6 @@ logger.setLevel(logging.INFO)
 PromptBucket = os.environ['PROMPT_BUCKET']
 PromptFile = os.environ['PROMPT_FILE']
 queue_url = os.environ['QUEUE_URL']
-TargetBucket = os.environ['TARGET_BUCKET']  # Add this line
 
 def read_prompt_from_s3(bucket_name, object_key):
     s3 = boto3.client('s3')
@@ -35,8 +34,8 @@ def generate_text(model_id, body):
     bedrock = boto3.client(
         service_name="bedrock-runtime",
         region_name="us-east-1",
-        aws_access_key_id="AKIAWRWOL7LX7GFQWVEN",
-        aws_secret_access_key="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"
+        aws_access_key_id="AKIAUDYK5RDSUYQYGFXW",
+        aws_secret_access_key="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"
     )
 
     accept = "application/json"
@@ -74,7 +73,6 @@ def lambda_handler(event, context):
     targetDb="MongoDB"
     #prompt = "Just make the following SQL compatible with" +targetDb+"? Just provide the output query only without any explaination. \n"
     prompt = read_prompt_from_s3(PromptBucket, PromptFile)
-    converted_sql_string=''
 
     # Check if there are any messages
     if 'Messages' in response:
@@ -114,43 +112,21 @@ def lambda_handler(event, context):
                         }
                     })
                     print("Given prompt - "+body)
-                    #converted_sql = generate_text(model_id, body)
-                    
-                    response_body = generate_text(model_id, body)
-                    converted_sql = response_body['results'][0]['outputText']
-                    converted_sql_statements.append(converted_sql)
-                    
-                    # Join the converted SQL statements with a semicolon separator
-                    converted_sql_string += converted_sql+';\n'
-
-                    print(converted_sql_string)
+                    converted_sql = generate_text(model_id, body)
+                    print(converted_sql)
                     
                     #if model_id == 'meta.llama2-13b-chat-v1':
                         #output = converted_sql['generation'].strip()
-                    #if model_id == 'amazon.titan-text-express-v1':
-                        #output = ''
-                        #for result in converted_sql['results']:
-                            #output += result['outputText']
+                    if model_id == 'amazon.titan-text-express-v1':
+                        output = ''
+                        for result in converted_sql['results']:
+                            output += result['outputText']
                             
-                    #converted_sql_statements.append(output)
+                    converted_sql_statements.append(output)
             # Delete the message from the SQS queue
             sqs.delete_message(
                 QueueUrl=queue_url,
                 ReceiptHandle=message['ReceiptHandle']
             )
-    #print(response_body)
-    
-    # Upload the converted SQL string to the target S3 bucket
-    s3 = boto3.client('s3')
-    object_key = f'converted_sql/{key.split("/")[-1]}'  # Adjust the object key as needed
-    s3.put_object(Bucket=TargetBucket, Key=object_key, Body=converted_sql_string.encode('utf-8'))
-    
+    #print(converted_sql_statements)
     return converted_sql_statements
-
-
-
-#return {
-#    'statusCode': 200,
-#    'body': json.dumps('SQL conversion completed successfully!')
-#}
-
