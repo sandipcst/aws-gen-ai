@@ -1,0 +1,150 @@
+Parameters:
+  AWSAccountNumber:
+    Type: String
+    Description: "AWS Account Number"
+
+Resources:
+  LambdaRoleForS3SQS:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: Lambda-Role-for-S3-SQS
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
+                  - !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+              - Sid: "CustomPolicy"
+                Effect: "Allow"
+                Action: "s3:PutObject"
+                Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+
+  ExampleBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "example-${AWSAccountNumber}"
+
+  OutputBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "output-${AWSAccountNumber}"
+
+  PromptBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "prompt-buc-${AWSAccountNumber}"
+
+  MySQSQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: myqueue
+      QueuePolicyDocument:
+        Version: "2012-10-17"
+        Id: "example-ID"
+        Statement:
+          - Sid: "example-statement-ID"
+            Effect: "Allow"
+            Principal:
+              Service: "s3.amazonaws.com"
+            Action: "SQS:SendMessage"
+            Resource: !GetAtt MySQSQueue.Arn
+            Condition:
+              StringEquals:
+                "aws:SourceAccount": !Ref AWSAccountNumber
+              ArnLike:
+                "aws:SourceArn": !Sub "arn:aws:s3:::example-${AWSAccountNumber}"
+          - Sid: "LambdaAccess"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3SQS.Arn
+            Action: "SQS:*"
+            Resource: !GetAtt MySQSQueue.Arn
+
+  YourLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: YourLambdaFunction
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaRoleForS3SQS.Arn
+      Timeout: 90
+      Environment:
+        Variables:
+          PROMPT_BUCKET: !Ref PromptBucket
+          PROMPT_FILE: Prompt.txt
+          QUEUE_URL: !Ref MySQSQueue
+          TARGET_BUCKET: !Ref OutputBucket
+      Runtime: python3.8
+      Code:
+        ZipFile: |
+          import boto3
+          import json, os
+          import logging
+
+          # Your lambda function code here
+
+  LambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !GetAtt YourLambdaFunction.Arn
+      Action: "lambda:InvokeFunction"
+      Principal: "s3.amazonaws.com"
+      SourceAccount: !Ref AWSAccountNumber
+      SourceArn: !GetAtt ExampleBucket.Arn
+
+  UpdateSourceBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref ExampleBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowS3ToLambdaRole"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3SQS.Arn
+            Action: "s3:GetObject"
+            Resource: !Join ["", [!GetAtt ExampleBucket.Arn, "/*"]]
+
+  UpdateTargetBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref OutputBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowS3ToLambdaRole"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3SQS.Arn
+            Action: "s3:PutObject"
+            Resource: !Join ["", [!GetAtt OutputBucket.Arn, "/*"]]
+
+  UpdatePromptBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref PromptBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowS3ToLambdaRole"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3SQS.Arn
+            Action: "s3:GetObject"
+            Resource: !Join ["", [!GetAtt PromptBucket.Arn, "/*"]]
