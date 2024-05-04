@@ -1,0 +1,26 @@
+# New Stack Template
+
+Parameters:
+  StackName:
+    Type: String
+    Description: Name of the existing stack
+
+Resources:
+  S3EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !ImportValue "LambdaFunctionArn-${StackName}"
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !ImportValue "InputBucketName-${StackName}"
+
+  S3BucketEvent:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !ImportValue "InputBucketName-${StackName}"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:*'
+            Function: !ImportValue 
+            'Fn::Sub': "LambdaFunctionArn-${AWS::StackName}"

@@ -1,0 +1,223 @@
+Parameters:
+  AWSAccountNumber:
+    Type: String
+    Description: "AWS Account Number"
+
+Resources:
+  ExampleBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub "example-${AWSAccountNumber}"
+      AccessControl: Private
+
+  ExampleBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ExampleBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowS3ToLambdaRole"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3.Arn
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
+
+  OutputBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub "output-${AWSAccountNumber}"
+      AccessControl: Private
+
+  OutputBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref OutputBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowS3ToLambdaRole"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3.Arn
+            Action: "s3:PutObject"
+            Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+
+  PromptBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub "prompt-buc-${AWSAccountNumber}"
+      AccessControl: Private
+
+  PromptBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PromptBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowS3ToLambdaRole"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt LambdaRoleForS3.Arn
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
+
+  LambdaRoleForS3:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: Lambda-Role-for-S3
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: Lambda-Role-for-S3-Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AllowGetObjectFromExampleAndPromptBucket
+                Effect: Allow
+                Action: 
+                  - s3:GetObject
+                Resource:
+                  - !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
+                  - !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
+              - Sid: AllowPutObjectToOutputBucket
+                Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+              - Sid: AllowBedrockFoundationModels
+                Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource: !Sub "arn:aws:bedrock:us-east-1::foundation-model/*"
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: "arn:aws:logs:*:*:*"
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: SqlGenerator
+      Runtime: python3.8
+      Handler: index.lambda_handler
+      Timeout: 90
+      Role: !GetAtt LambdaRoleForS3.Arn
+      Environment:
+        Variables:
+          PROMPT_BUCKET: !Ref PromptBucket
+          PROMPT_FILE: Prompt.txt
+          TARGET_BUCKET: !Ref OutputBucket
+      Code:
+        ZipFile: |
+          import boto3
+          import json, os
+          import logging
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          PromptBucket = os.environ['PROMPT_BUCKET']
+          PromptFile = os.environ['PROMPT_FILE']
+          TargetBucket = os.environ['TARGET_BUCKET']  # Add this line
+
+          def read_prompt_from_s3(bucket_name, object_key):
+              s3 = boto3.client('s3')
+              try:
+                  response = s3.get_object(Bucket=bucket_name, Key=object_key)
+                  prompt_content = response['Body'].read().decode('utf-8')
+                  return prompt_content
+              except Exception as e:
+                  print(f"Error reading prompt file from S3: {e}")
+                  return None
+
+          def generate_text(model_id, body):
+              """
+              Generate text using Amazon Bedrock Llama model on demand.
+              Args:
+                  model_id (str): The model ID to use.
+                  body (str) : The request body to use.
+              Returns:
+                  response (json): The response from the model.
+              """
+              logger.info("Generating text with Amazon Bedrock Llama model %s", model_id)
+
+              bedrock = boto3.client(
+                  service_name="bedrock-runtime",
+                  region_name="us-east-1"#,
+                  #aws_access_key_id="AKIA3JW53YPPW5H4CMVQ",
+                  #aws_secret_access_key="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"
+              )
+
+              accept = "application/json"
+              content_type = "application/json"
+
+              response = bedrock.invoke_model(
+                  body=body, modelId=model_id, accept=accept, contentType=content_type
+              )
+              response_body = json.loads(response.get("body").read().decode('utf-8'))
+
+              finish_reason = response_body.get("error")
+
+              if finish_reason is not None:
+                  raise ImageError(f"Text generation error. Error is {finish_reason}")
+
+              logger.info("Successfully generated text with Amazon Bedrock Llama model %s", model_id)
+
+              return response_body
+
+          def lambda_handler(event, context):
+              model_id = 'amazon.titan-text-express-v1'
+              targetDb="MongoDB"
+              prompt = read_prompt_from_s3(PromptBucket, PromptFile)
+              converted_sql_string=''
+
+              bucket = event['Records'][0]['s3']['bucket']['name']
+              key = event['Records'][0]['s3']['object']['key']
+
+              s3 = boto3.client('s3')
+              response = s3.get_object(Bucket=bucket, Key=key)
+              data = response['Body'].read().decode('utf-8')
+              sql_statements = data.split(';')
+
+              converted_sql_statements = []
+              for sql in sql_statements:
+                  if sql.strip():
+                      body = json.dumps({
+                          "inputText": "User: "+prompt+" "+sql+"\nBot:",
+                          "textGenerationConfig": {
+                              "maxTokenCount": 2048,
+                              "stopSequences": [],
+                              "temperature": 0,
+                              "topP": 0.1
+                          }
+                      })
+                      response_body = generate_text(model_id, body)
+                      converted_sql = response_body['results'][0]['outputText']
+                      converted_sql_statements.append(converted_sql)
+                      converted_sql_string += converted_sql+';\n'
+
+              s3 = boto3.client('s3')
+              object_key = f'converted_sql/{key.split("/")[-1]}'  # Adjust the object key as needed
+              s3.put_object(Bucket=TargetBucket, Key=object_key, Body=converted_sql_string.encode('utf-8'))
+
+              return converted_sql_statements
+
+Outputs:
+  LambdaFunctionArnOutput:
+    Description: "ARN of the Lambda function to trigger"
+    Value: !GetAtt LambdaFunction.Arn
+    Export:
+      Name: !Sub "LambdaFunctionArn-${AWS::StackName}"
+
+  InputBucketNameOutput:
+    Description: "Name of the S3 bucket to monitor for object creation"
+    Value: !Ref ExampleBucket
+    Export:
+      Name: !Sub "InputBucketName-${AWS::StackName}"
+  

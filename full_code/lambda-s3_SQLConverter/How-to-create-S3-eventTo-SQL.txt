@@ -1,0 +1,225 @@
+You are a AWS Solution Architect. 
+Create a yaml file for creating AWS resources with the below details -
+
+
+
+Step 1 - 
+Create 3 S3 buckets. 
+  a. Source SQL BUcket name - example-257583088265
+  b. Target Bucket name - output-257583088265
+  c. Prompt Bucket name - prompt-buc-257583088265
+
+Step 1 - Create custom policy Lambda-Role-for-S3
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": [
+                "arn:aws:s3:::prompt-buc-257583088265/*",
+                "arn:aws:s3:::example-257583088265/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::output-257583088265/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:*"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        }
+    ]
+}
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "BedrockInvokeModelStatement",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
+            ]
+        }
+    ]
+}
+
+Step 3 - 
+Create a Role "Lambda-Role-for-S3" trusting Lambda with following policy-
+    1. Lambda-Role-for-S3
+    
+
+Step 4 - 
+S3 => Properties => Event Notification => Give Lambda details and create event to call Lambda function SqlGenerator for all put objects in s3
+
+Step 5 - 
+Update Source SQL BUcket named - example-257583088265 S3 bucket policy -
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::257583088265:role/Lambda-Role-for-S3"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::example-257583088265/*"
+        }
+    ]
+}
+
+Update Prompt BUcket named - prompt-buc-257583088265 S3 bucket policy -
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::257583088265:role/Lambda-Role-for-S3"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::prompt-buc-257583088265/*"
+        }
+    ]
+}
+
+Update Target Bucket name - output-257583088265 S3 bucket policy -
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::257583088265:role/Lambda-Role-for-S3"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::output-257583088265/*"
+        }
+    ]
+}
+
+
+
+Step 6:
+
+Deploy a Lambda function SqlGenerator with following configuration - 
+1. Environment variables - 
+  a. PROMPT_BUCKET	prompt-buc-257583088265
+  b. PROMPT_FILE	Prompt.txt
+  c. TARGET_BUCKET output-257583088265
+2. Timeout - 1 min 30 sec
+3. With existing role - arn:aws:iam::257583088265:role/Lambda-Role-for-S3-SQS
+
+############################################################################################
+
+For UI - 
+
+Create policy named allow-put-example with below policy 
+
+
+
+Create role ec2-ui with the policy ec2-ui
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::example-315558256366/*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::output-315558256366/*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::output-315558256366/*"
+        }
+    ]
+}
+
+
+Update example bucket policy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::315558256366:role/Lambda-Role-for-S3"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::example-315558256366/*"
+        },
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::315558256366:role/ec2-ui"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::example-315558256366/*"
+        }
+    ]
+}
+
+Update output bucket policy 
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowS3ToLambdaRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::315558256366:role/Lambda-Role-for-S3"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::output-315558256366/*"
+        },
+        {
+            "Sid": "AllowS3ToUI",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::315558256366:role/ec2-ui"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::output-315558256366/*"
+        },
+        {
+            "Sid": "AllowS3ToUI",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::315558256366:role/ec2-ui"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::output-315558256366"
+        }
+    ]
+}
+
+
