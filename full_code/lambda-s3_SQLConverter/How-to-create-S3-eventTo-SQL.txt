@@ -130,11 +130,8 @@ Deploy a Lambda function SqlGenerator with following configuration -
 
 For UI - 
 
-Create policy named allow-put-example with below policy 
-
-
-
-Create role ec2-ui with the policy ec2-ui
+Step 1 -
+Create policy named ec2-ui with below policy 
 
 {
     "Version": "2012-10-17",
@@ -161,6 +158,10 @@ Create role ec2-ui with the policy ec2-ui
 }
 
 
+Step 2 - 
+Create role ec2-ui with the policy ec2-ui
+
+
 Update example bucket policy
 
 {
@@ -176,7 +177,7 @@ Update example bucket policy
             "Resource": "arn:aws:s3:::example-315558256366/*"
         },
         {
-            "Sid": "AllowS3ToLambdaRole",
+            "Sid": "AllowS3ToEC2",
             "Effect": "Allow",
             "Principal": {
                 "AWS": "arn:aws:iam::315558256366:role/ec2-ui"

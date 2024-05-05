@@ -23,6 +23,12 @@ Resources:
               AWS: !GetAtt LambdaRoleForS3.Arn
             Action: "s3:GetObject"
             Resource: !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
+          - Sid: "AllowS3ToEC2"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt EC2RoleForUI.Arn
+            Action: "s3:PutObject"
+            Resource: !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
 
   OutputBucket:
     Type: 'AWS::S3::Bucket'
@@ -43,6 +49,18 @@ Resources:
               AWS: !GetAtt LambdaRoleForS3.Arn
             Action: "s3:PutObject"
             Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+          - Sid: "AllowS3GetToEC2"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt EC2RoleForUI.Arn
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+          - Sid: "AllowS3ListToEC2"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt EC2RoleForUI.Arn
+            Action: "s3:ListBucket"
+            Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}"
 
   PromptBucket:
     Type: 'AWS::S3::Bucket'
@@ -62,6 +80,12 @@ Resources:
             Principal:
               AWS: !GetAtt LambdaRoleForS3.Arn
             Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
+          - Sid: "AllowS3ToEC2"
+            Effect: "Allow"
+            Principal:
+              AWS: !GetAtt EC2RoleForUI.Arn
+            Action: "s3:PutObject"
             Resource: !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
 
   LambdaRoleForS3:
@@ -99,6 +123,132 @@ Resources:
                 Action:
                   - logs:*
                 Resource: "arn:aws:logs:*:*:*"
+
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: '10.0.0.0/16'
+
+  MyInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref MyInternetGateway
+
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref MyInternetGateway
+
+  MySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: '10.0.0.0/24'
+  
+  MyRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MySubnet
+      RouteTableId: !Ref MyRouteTable
+
+  EC2RoleForUI:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: EC2RoleForUI
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: EC2RoleForUI-Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AllowGetObjectFromOutputBucket
+                Effect: Allow
+                Action: 
+                  - s3:GetObject
+                Resource:
+                  - !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+              - Sid: AllowListObjectToOutputBucket
+                Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub "arn:aws:s3:::output-${AWSAccountNumber}/*"
+              - Sid: AllowPutObjectToExampleBucket
+                Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
+              - Sid: AllowPutObjectToExampleBucket
+                Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
+  
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref EC2RoleForUI
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      # AvailabilityZone: us-east-1a
+      #SecurityGroupIds:
+      #  - Ref: MySecurityGroup
+      #SubnetId: !Ref MySubnet
+      ImageId: ami-045602374a1982480 
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: "0"
+        SubnetId: !Ref MySubnet
+        GroupSet:
+          - !Ref MySecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y git
+          yum install -y python3-pip
+          pip3 install boto3 streamlit
+          git clone https://sandipcst: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@github.com/sandipcst/aws-gen-ai.git
+          cd aws-gen-ai/full_code/lambda-s3_SQLConverter
+          export AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --output text --query 'Account')
+          sed -i "s/315558256366/${AWS_ACCOUNT_NUMBER}/g" ./ui-lambda.py
+          nohup streamlit run ui-lambda.py --server.port=5000 &
+          aws s3 cp Prompt.txt s3://prompt-buc-${AWS_ACCOUNT_NUMBER}/
+      IamInstanceProfile: !Ref InstanceProfile
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH and port 5000 access
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5000
+          ToPort: 5000
+          CidrIp: 0.0.0.0/0
 
   LambdaFunction:
     Type: AWS::Lambda::Function

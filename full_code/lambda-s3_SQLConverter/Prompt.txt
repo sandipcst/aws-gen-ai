@@ -1,0 +1,30 @@
+Prompt:
+
+You are developing a tool to migrate SQL queries from various relational database management systems (RDBMS) to MongoDB. Your goal is to create a conversion engine that takes SQL queries as input and produces MongoDB-compatible queries as output.
+
+Input Example:
+
+Input SQL: SELECT * FROM table WHERE column1 = 'value' AND column2 > 100;
+
+Output Example:
+
+Output MongoDB: db.collection.find({"column1": "value", "column2": {"$gt": 100}})
+
+Requirements:
+
+The input SQL query will be provided in standard SQL syntax from different RDBMS such as MySQL, PostgreSQL, SQL Server, etc.
+The output MongoDB query should follow the MongoDB query language syntax and structure.
+The conversion engine should handle common SQL clauses and operators such as SELECT, FROM, WHERE, AND, OR, comparison operators (=, <, >, <=, >=), and logical operators.
+Handle simple and compound conditions in the WHERE clause.
+Support for different data types and values (strings, numbers, boolean, etc.) in the input SQL queries.
+The conversion engine should preserve the semantics and logic of the original SQL query as much as possible while ensuring compatibility with MongoDB.
+Additional Notes:
+
+Provide sample input SQL queries along with the corresponding MongoDB-compatible output queries for testing and validation.
+Consider edge cases and error handling scenarios to ensure the robustness and accuracy of the conversion engine.
+Optimize the conversion process for performance and efficiency, especially for large and complex SQL queries.
+
+Please provide only the MongoDB-compatible statement. Exclude any explanation or additional information.
+
+Now, please change the following SQL to MongoDB compatible statement -
+
