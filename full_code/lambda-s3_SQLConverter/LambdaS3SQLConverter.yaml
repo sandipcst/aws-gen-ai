@@ -193,7 +193,7 @@ Resources:
                 Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "arn:aws:s3:::example-${AWSAccountNumber}/*"
-              - Sid: AllowPutObjectToExampleBucket
+              - Sid: AllowPutObjectToPromptBucket
                 Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "arn:aws:s3:::prompt-buc-${AWSAccountNumber}/*"
